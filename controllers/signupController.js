@@ -5,7 +5,7 @@ const { verifyPassword, encryptPassword, verifyEmail, sendOTP, isMobileOrEmail, 
 const otpGenerator = require('otp-generator');
 const router = require('../routes/signupRouter');
 const mongoose = require('mongoose');
-
+const nodemailer = require("nodemailer");
 
 // USER & VENDOR
 
@@ -24,6 +24,11 @@ exports.preSignupUser = async (req, res, next) => {
             var password = data.password;
             var userType = data.userType;
             var filters = {};
+            if (!email) {
+                res.statusCode = 200;
+                res.setHeader('Content-Type', 'application/json');
+                return res.json({ message: 'Please provide a valid Email.', error: true, data: { isVendor: null, isMobile: null } });
+            }
             if (email && !await verifyEmail(email)) {
                 res.statusCode = 200;
                 res.setHeader('Content-Type', 'application/json');
@@ -36,10 +41,17 @@ exports.preSignupUser = async (req, res, next) => {
                 filters = { $and: [{ 'mobile_number.country_code': countryCode }, { 'mobile_number.number': number }] };
             }
             const account = await signupService.isUserExists(filters, null, { lean: true });
+            console.log(account);
             if (account) {
                 let isMobile = account.mobile_number.number === number;
+                
+                let isEmail = account.email === email;
+
                 res.statusCode = 200;
                 res.setHeader('Content-Type', 'application/json');
+                if(isEmail)
+                    res.json({ message: "Account already exists.", error: true, data: { isVendor: account.is_vendor, isEmail: isEmail } });
+                else
                 res.json({ message: "Account already exists.", error: true, data: { isVendor: account.is_vendor, isMobile: isMobile } });
             }
             else {
@@ -62,11 +74,56 @@ exports.preSignupUser = async (req, res, next) => {
                 }
                 const otpData = await signupService.createPreSignupRecord(presignupRecord);
 
-                // Send Mobile OTP
+                // // Send Email OTP
+
+
+
+
+                // async function main() {
+                //     // Generate test SMTP service account from ethereal.email
+                //     // Only needed if you don't have a real mail account for testing
+                //     // let testAccount = await nodemailer.createTestAccount()
+                  
+                //     // create reusable transporter object using the default SMTP transport
+                //     let transporter = nodemailer.createTransport({
+                //       host: "smtpout.secureserver.net",
+                //       port: 465,
+                //       secure: true, // true for 465, false for other ports
+                //       auth: {
+                //         user: testAccount.user, // generated ethereal user
+                //         pass: testAccount.pass, // generated ethereal password
+                //       },
+                //     });
+                  
+                //     // send mail with defined transport object
+                //     let info = await transporter.sendMail({
+                //       from: '"Fred Foo 👻" <foo@example.com>', // sender address
+                //       to: email, // list of receivers
+                //       subject: "Hello ✔", // Subject line
+                //       text: "Hello world?", // plain text body
+                //       html: "<b>Hello world?</b>", // html body
+                //     });
+                  
+                //     console.log("Message sent: %s", info.messageId);
+                //     // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+                  
+                //     // Preview only available when sending through an Ethereal account
+                //     console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+                //     // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
+                //   }
+                  
+                //   main().catch(console.error);
+                  
+
+
+
+
+
+
 
                 res.statusCode = 200;
                 res.setHeader('Content-Type', 'application/json');
-                res.json({ message: 'OTP has been sent to your mobile number.', error: false, data: { id: otpData._id, otp: otp } });
+                res.json({ message: 'OTP has been sent to your Email id.', error: false, data: { id: otpData._id, otp: otp } });
             }
         }
     } catch (error) {
@@ -162,7 +219,59 @@ exports.resendUserOTP = async (req, res, next) => {
                 userData.date = Date.now();
                 await userData.save();
 
-                // Send OTP to mobile.
+                // Send OTP to Email.
+
+
+
+                // // Send Email OTP
+
+
+
+
+                // async function main() {
+                //     // Generate test SMTP service account from ethereal.email
+                //     // Only needed if you don't have a real mail account for testing
+                //     // let testAccount = await nodemailer.createTestAccount()
+                  
+                //     // create reusable transporter object using the default SMTP transport
+                //     let transporter = nodemailer.createTransport({
+                //       host: "smtpout.secureserver.net",
+                //       port: 465,
+                //       secure: true, // true for 465, false for other ports
+                //       auth: {
+                //         user: testAccount.user, // generated ethereal user
+                //         pass: testAccount.pass, // generated ethereal password
+                //       },
+                //     });
+                  
+                //     // send mail with defined transport object
+                //     let info = await transporter.sendMail({
+                //       from: '"Fred Foo 👻" <foo@example.com>', // sender address
+                //       to: email, // list of receivers
+                //       subject: "Hello ✔", // Subject line
+                //       text: "Hello world?", // plain text body
+                //       html: "<b>Hello world?</b>", // html body
+                //     });
+                  
+                //     console.log("Message sent: %s", info.messageId);
+                //     // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+                  
+                //     // Preview only available when sending through an Ethereal account
+                //     console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+                //     // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
+                //   }
+                  
+                //   main().catch(console.error);
+                  
+
+
+
+
+
+
+
+
+
 
                 res.statusCode = 200;
                 res.setHeader('Content-Type', 'application/json');
