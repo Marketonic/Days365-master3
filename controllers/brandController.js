@@ -4,7 +4,7 @@ const { validationResult } = require('express-validator');
 const { ErrorBody } = require('../utils/ErrorBody');
 const mongoose = require('mongoose');
 const { response } = require('../app');
-
+//brand
 exports.addBrand = async (req, res, next) => {
     try {
       
