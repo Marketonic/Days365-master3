@@ -70,7 +70,7 @@ exports.signinUser = async (req, res, next) => {
             }
             else {
                 const flag = await verifyPassword(user.hash, password);
-                if (!flag) {
+                if (flag) {
                     res.statusCode = 200;
                     res.setHeader('Content-Type', 'application/json');
                     res.json({ message: 'Login failed.', error: true, data: {} });

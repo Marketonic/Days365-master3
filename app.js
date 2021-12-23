@@ -48,7 +48,7 @@ const productForSellRouter = require('./routes/productForSellRouter');
 const cartRouter = require('./routes/cartRouter');
 const checkOutRouter = require('./routes/checkoutOderRouter');
 
-
+const userRouter = require('./routes/userRouter');
 
 var app = express();
 require('dotenv').config();
@@ -107,6 +107,7 @@ app.use('/productForSell',productForSellRouter);
 app.use("/cart",cartRouter);
 app.use('/checkout',checkOutRouter)
 
+app.use('/user',userRouter)
 
 
 /**
